@@ -1,17 +1,23 @@
 {
-  "dependencies": {
-    "@hiveio/hive-js": "^0.8.10",
-    "moment": "^2.29.1"
-  },
-  "name": "WitnessVoteCleanup",
+  "name": "WitnessReview",
   "version": "1.0.0",
+  "description": "",
   "main": "index.js",
-  "devDependencies": {},
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Rishi556/WitnessReview.git"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "description": ""
+  "bugs": {
+    "url": "https://github.com/Rishi556/WitnessReview/issues"
+  },
+  "homepage": "https://github.com/Rishi556/WitnessReview#readme",
+  "dependencies": {
+    "express": "^4.17.1"
+  }
 }
