@@ -23,6 +23,9 @@ async function getLastBlock(witness) {
     return response.last_confirmed_block_num
 }
 
+checkWitnesses("edicted", ["netuoso", "thecryptodrive"], 4, 86400/3).then((res) => {
+    console.log(res)
+})
 async function checkWitnesses(voter, blockedWitnesses, maxPriceFeedAge, maxBlockDifference) {
     let witnessesVotedFor = await getWitnessesVotingFor(voter)
     let theList = {}
@@ -39,6 +42,7 @@ async function checkWitnesses(voter, blockedWitnesses, maxPriceFeedAge, maxBlock
         let lastBlockedProduced = await getLastBlock(witnessesVotedFor[i])
         theList[witnessesVotedFor[i]]["lastProducedBlock"] = lastBlockedProduced
         theList[witnessesVotedFor[i]]["lastProducedBlockTooOld"] = headBlockNumber - lastBlockedProduced >= maxBlockDifference
+        console.log(`done with ${witnessesVotedFor[i]}`)
     }
     return theList
 }
