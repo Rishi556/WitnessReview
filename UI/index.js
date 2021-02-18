@@ -23,16 +23,16 @@ async function getLastBlock(witness) {
     return response.last_confirmed_block_num
 }
 
-checkWitnesses("edicted", ["netuoso", "thecryptodrive"], 4, 86400/3).then((res) => {
+checkWitnesses("rishi556", ["netuoso", "thecryptodrive", "cervantes"], 4, 86400/3, (86400/3) * 30).then((res) => {
     console.log(res)
 })
-async function checkWitnesses(voter, blockedWitnesses, maxPriceFeedAge, maxBlockDifference) {
+async function checkWitnesses(voter, blockedWitnesses, maxPriceFeedAge, maxBlockDifference, maxBlockVotingDifference) {
     let witnessesVotedFor = await getWitnessesVotingFor(voter)
     let theList = {}
     let currentChainStats = await hive.api.callAsync("condenser_api.get_dynamic_global_properties", [])
     let headBlockNumber = currentChainStats.head_block_number
     for (let i in witnessesVotedFor) {
-        theList[witnessesVotedFor[i]] = {"witnessesSupported" : [], "priceFeedAge" : -1, "lastProducedBlock" : 0, "blockedWitnessesSupported" : [], "priceFeedAgeTooOld" : false, "lastProducedBlockTooOld" : false}
+        theList[witnessesVotedFor[i]] = {"witnessesSupported" : [], "priceFeedAge" : -1, "lastProducedBlock" : 0, "blockedWitnessesSupported" : [], "priceFeedAgeTooOld" : false, "lastProducedBlockTooOld" : false, "supportedBlockTooOld" : []}
         let witnessSupportedByWitness = await getWitnessesVotingFor(witnessesVotedFor[i])
         theList[witnessesVotedFor[i]]["witnessesSupported"] = witnessSupportedByWitness
         theList[witnessesVotedFor[i]]["blockedWitnessesSupported"] = matches(blockedWitnesses, witnessSupportedByWitness)
@@ -42,6 +42,12 @@ async function checkWitnesses(voter, blockedWitnesses, maxPriceFeedAge, maxBlock
         let lastBlockedProduced = await getLastBlock(witnessesVotedFor[i])
         theList[witnessesVotedFor[i]]["lastProducedBlock"] = lastBlockedProduced
         theList[witnessesVotedFor[i]]["lastProducedBlockTooOld"] = headBlockNumber - lastBlockedProduced >= maxBlockDifference
+        for (let j in theList[witnessesVotedFor[i]]["witnessesSupported"]){
+            let supportedBlockAge = await getLastBlock(theList[witnessesVotedFor[i]]["witnessesSupported"][j])
+            if ( headBlockNumber - supportedBlockAge >= maxBlockVotingDifference){
+                theList[witnessesVotedFor[i]]["supportedBlockTooOld"].push(theList[witnessesVotedFor[i]]["witnessesSupported"][j])
+            }
+        }
         console.log(`done with ${witnessesVotedFor[i]}`)
     }
     return theList
